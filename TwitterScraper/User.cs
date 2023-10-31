@@ -76,45 +76,127 @@ namespace TwitterScraper
 			// Add more logic if needed after loading the user page
 		}
 
-		public static async Task<Dictionary<string, List<string>>> GetUsersFollowers(List<string> users, string env, /*bool verbose = true, */bool headless = true,/* int wait = 2, int limit = int.MaxValue,*/ string filePath = null)
-		{
-			Dictionary<string, List<string>> followers = await TwitterScraper.Utils.GetUsersFollow(users, headless, env, "followers"/*, verbose, wait, limit*/);
-			
-			followers = followers.ToDictionary(x => x.Key, x => x.Value.Distinct().ToList());
+    public static async Task<Dictionary<string, List<string>>> GetUsersFollowers(List<string> users, string env, /*bool verbose = true, */bool headless = true,/* int wait = 2, int limit = int.MaxValue,*/ string filePath = null)
+    {
+      Dictionary<string, List<string>> followers = await TwitterScraper.Utils.GetUsersFollow(users, headless, env, "followers"/*, verbose, wait, limit*/);
 
-			if (string.IsNullOrEmpty(filePath))
-			{
-				filePath = $"outputs/{users[0]}_{users[^1]}_followers.json";
-			}
-			else
-			{
-				filePath += $"{users[0]}_{users[^1]}_followers.json";
-			}
+      followers = followers.ToDictionary(x => x.Key, x => x.Value.Distinct().ToList());
 
-			SaveToJsonFile(followers, filePath);
-			Console.WriteLine($"File saved in {filePath}");
-			return followers;
-		}
+      if (string.IsNullOrEmpty(filePath))
+      {
+        filePath = $"outputs/{users[0]}_{users[^1]}_followers.json";
+      }
+      else
+      {
+        filePath += $"{users[0]}_{users[^1]}_followers.json";
+      }
 
-		public static async Task<Dictionary<string, List<string>>> GetUsersFollowing(List<string> users, string env, bool verbose = true, bool headless = true, int wait = 2, int limit = int.MaxValue, string filePath = null)
-		{
-			Dictionary<string, List<string>> following = await Utils.GetUsersFollow(users, headless, env, "following"/*, verbose, wait, limit*/);
+      SaveToJsonFile(followers, filePath);
+      Console.WriteLine($"File saved in {filePath}");
+      return followers;
+    }
 
-			if (string.IsNullOrEmpty(filePath))
-			{
-				filePath = $"outputs/{users[0]}_{users[^1]}_following.json";
-			}
-			else
-			{
-				filePath += $"{users[0]}_{users[^1]}_following.json";
-			}
+    public static async Task<Dictionary<string, List<string>>> GetUsersFollowing(List<string> users, string env, /*bool verbose = true,*/ bool headless = true, int wait = 2, int limit = int.MaxValue, string filePath = null)
+    {
+      Dictionary<string, List<string>> following = await Utils.GetUsersFollow(users, headless, env, "following"/*, verbose, wait, limit*/);
 
-			SaveToJsonFile(following, filePath);
-			Console.WriteLine($"File saved in {filePath}");
-			return following;
-		}
+      if (string.IsNullOrEmpty(filePath))
+      {
+        filePath = $"outputs/{users[0]}_{users[^1]}_following.json";
+      }
+      else
+      {
+        filePath += $"{users[0]}_{users[^1]}_following.json";
+      }
 
-		public static void SaveToJsonFile<T>(T data, string filePath)
+      SaveToJsonFile(following, filePath);
+      Console.WriteLine($"File saved in {filePath}");
+      return following;
+    }
+
+    public static async Task<Dictionary<string, List<string>>> GetPostLikes(List<string> postUrls, string env, /*bool verbose = true,*/ bool headless = true, int wait = 2, int limit = int.MaxValue, string filePath = null)
+    {
+      Dictionary<string, List<string>> usersLiked = await Utils.GetPostsLikes(postUrls, headless, env, "likes"/*, verbose, wait, limit*/);
+
+      usersLiked = usersLiked.ToDictionary(x => x.Key, x => x.Value.Distinct().ToList());
+
+      if (string.IsNullOrEmpty(filePath))
+      {
+        var splitedUrl = postUrls[0].Split('/');
+        filePath = $"outputs/{splitedUrl[5]}__UserLikes.json";
+      }
+      else
+      {
+        filePath += $"{postUrls[0]}_{postUrls[^1]}_UserLikes.json";
+      }
+
+      SaveToJsonFile(usersLiked, filePath);
+      Console.WriteLine($"File saved in {filePath}");
+      return usersLiked;
+    }
+
+    public static async Task<Dictionary<string, List<string>>> GetPostReplys(List<string> postUrls, string env, /*bool verbose = true,*/ bool headless = true, int wait = 2, int limit = int.MaxValue, string filePath = null)
+    {
+      Dictionary<string, List<string>> usersLiked = await Utils.GetReplys(postUrls, headless, env /*, verbose, wait, limit*/);
+
+      usersLiked = usersLiked.ToDictionary(x => x.Key, x => x.Value.Distinct().ToList());
+
+      if (string.IsNullOrEmpty(filePath))
+      {
+        var splitedUrl = postUrls[0].Split('/');
+        filePath = $"outputs/{splitedUrl[5]}__PostReplys.json";
+      }
+      else
+      {
+        var splitedUrl = postUrls[0].Split('/');
+        filePath += $"{splitedUrl[5]}__PostReplys.json";
+      }
+
+      SaveToJsonFile(usersLiked, filePath);
+      Console.WriteLine($"File saved in {filePath}");
+      return usersLiked;
+    }
+    public static async Task<Dictionary<string, List<string>>> GetUserPosts(List<string> users, string env, /*bool verbose = true,*/ bool headless = true, int wait = 2, int limit = int.MaxValue, string filePath = null)
+    {
+      Dictionary<string, List<string>> posts = await Utils.GetPosts(users, headless, env /*, verbose, wait, limit*/);
+
+      posts = posts.ToDictionary(x => x.Key, x => x.Value.Distinct().ToList());
+
+      if (string.IsNullOrEmpty(filePath))
+      {
+        filePath = $"outputs/{users[0]}_{users[^1]}_UserPosts.json";
+      }
+      else
+      {
+        filePath += $"{users[0]}_{users[^1]}_UserPosts.json";
+      }
+
+      SaveToJsonFile(posts, filePath);
+      Console.WriteLine($"File saved in {filePath}");
+      return posts;
+    }
+
+    public static async Task<Dictionary<string, List<string>>> GetUserReposts(List<string> users, string env, /*bool verbose = true,*/ bool headless = true, int wait = 2, int limit = int.MaxValue, string filePath = null)
+    {
+      Dictionary<string, List<string>> posts = await Utils.GetReposts(users, headless, env /*, verbose, wait, limit*/);
+
+      posts = posts.ToDictionary(x => x.Key, x => x.Value.Distinct().ToList());
+
+      if (string.IsNullOrEmpty(filePath))
+      {
+        filePath = $"outputs/{users[0]}_{users[^1]}_UserReposts.json";
+      }
+      else
+      {
+        filePath += $"{users[0]}_{users[^1]}_UserReposts.json";
+      }
+
+      SaveToJsonFile(posts, filePath);
+      Console.WriteLine($"File saved in {filePath}");
+      return posts;
+    }
+
+    public static void SaveToJsonFile<T>(T data, string filePath)
 		{
 			var options = new JsonSerializerOptions
 			{
