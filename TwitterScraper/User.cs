@@ -116,7 +116,7 @@ namespace TwitterScraper
 
     public static async Task<Dictionary<string, List<string>>> GetPostLikes(List<string> postUrls, string env, /*bool verbose = true,*/ bool headless = true, int wait = 2, int limit = int.MaxValue, string filePath = null)
     {
-      Dictionary<string, List<string>> usersLiked = await Utils.GetPostsLikes(postUrls, headless, env, "likes"/*, verbose, wait, limit*/);
+      Dictionary<string, List<string>> usersLiked = await Utils.GetUsersLiked(postUrls, headless, env, "likes"/*, verbose, wait, limit*/);
 
       usersLiked = usersLiked.ToDictionary(x => x.Key, x => x.Value.Distinct().ToList());
 
@@ -156,11 +156,11 @@ namespace TwitterScraper
       Console.WriteLine($"File saved in {filePath}");
       return usersLiked;
     }
-    public static async Task<Dictionary<string, List<string>>> GetUserPosts(List<string> users, string env, /*bool verbose = true,*/ bool headless = true, int wait = 2, int limit = int.MaxValue, string filePath = null)
+    public static async Task<Dictionary<string, string>> GetUserPosts(string users, string env, /*bool verbose = true,*/ bool headless = true, int wait = 2, int limit = int.MaxValue, string filePath = null)
     {
-      Dictionary<string, List<string>> posts = await Utils.GetPosts(users, headless, env /*, verbose, wait, limit*/);
+      Dictionary<string, string> posts = await Utils.GetPosts(users, headless, env /*, verbose, wait, limit*/);
 
-      posts = posts.ToDictionary(x => x.Key, x => x.Value.Distinct().ToList());
+      posts = posts.GroupBy(x => x.Key).ToDictionary(g => g.Key, g => g.Last().Value);
 
       if (string.IsNullOrEmpty(filePath))
       {
